@@ -2,12 +2,11 @@ package middleware
 
 import (
 	"net/http"
+	"os"
 	"strings"
 
 	"github.com/golang-jwt/jwt/v4"
 )
-
-var jwtSecret = []byte("your-secret-key")
 
 func JWTAuth(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -18,6 +17,11 @@ func JWTAuth(next http.Handler) http.Handler {
 		}
 
 		tokenString := strings.TrimPrefix(authHeader, "Bearer ")
+		envSecret := os.Getenv("JWT_SECRET")
+		jwtSecret := []byte("gwi-jwt-secret")
+		if envSecret != "" {
+			jwtSecret = []byte(envSecret)
+		}
 		token, err := jwt.Parse(tokenString, func(t *jwt.Token) (interface{}, error) {
 			return jwtSecret, nil
 		})
