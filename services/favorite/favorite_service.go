@@ -2,19 +2,16 @@ package favorite_service
 
 import (
 	"encoding/json"
+	"gwi/database"
 	favorite_model "gwi/models/favorite"
 	"net/http"
 	"strconv"
 )
 
-var favorites = []favorite_model.Favorite{
-	{ID: 1, UserID: 1, Asset: "BTC"},
-	{ID: 2, UserID: 1, Asset: "AAPL"},
-}
-
 // GET /favorites?user_id=1
 func GetFavorites(w http.ResponseWriter, r *http.Request) {
 	userIDStr := r.URL.Query().Get("user_id")
+
 	if userIDStr == "" {
 		http.Error(w, "Missing user_id", http.StatusBadRequest)
 		return
@@ -27,7 +24,7 @@ func GetFavorites(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var userFavorites []favorite_model.Favorite
-	for _, f := range favorites {
+	for _, f := range database.FavoritesDB {
 		if f.UserID == userID {
 			userFavorites = append(userFavorites, f)
 		}
@@ -46,8 +43,8 @@ func AddFavorite(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Assign new ID
-	newFav.ID = len(favorites) + 1
-	favorites = append(favorites, newFav)
+	newFav.ID = len(database.FavoritesDB) + 1
+	database.FavoritesDB = append(database.FavoritesDB, newFav)
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
@@ -63,9 +60,9 @@ func DeleteFavorite(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	for i, f := range favorites {
+	for i, f := range database.FavoritesDB {
 		if f.ID == id {
-			favorites = append(favorites[:i], favorites[i+1:]...)
+			database.FavoritesDB = append(database.FavoritesDB[:i], database.FavoritesDB[i+1:]...)
 			w.WriteHeader(http.StatusNoContent)
 			return
 		}
