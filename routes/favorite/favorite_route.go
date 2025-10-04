@@ -1,26 +1,18 @@
 package favorite_route
 
 import (
+	"gwi/middleware"
 	favorite_service "gwi/services/favorite"
 	"net/http"
+
+	"github.com/gorilla/mux"
 )
 
-func RegisterRoutes() {
-	http.HandleFunc("/favorites", func(w http.ResponseWriter, r *http.Request) {
-		if r.Method == http.MethodGet {
-			favorite_service.GetFavorites(w, r)
-		} else if r.Method == http.MethodPost {
-			favorite_service.AddFavorite(w, r)
-		} else {
-			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
-		}
-	})
+func RegisterRoutes(router *mux.Router) {
 
-	http.HandleFunc("/favorites/", func(w http.ResponseWriter, r *http.Request) {
-		if r.Method == http.MethodDelete {
-			favorite_service.DeleteFavorite(w, r)
-		} else {
-			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
-		}
-	})
+	// Favorites routes with JWT middleware
+	router.Handle("/favorites", middleware.JWTAuth(http.HandlerFunc(favorite_service.GetFavorites))).Methods("GET")
+	router.Handle("/favorites", middleware.JWTAuth(http.HandlerFunc(favorite_service.AddFavorite))).Methods("POST")
+	router.Handle("/favorites/{id}", middleware.JWTAuth(http.HandlerFunc(favorite_service.DeleteFavorite))).Methods("DELETE")
+
 }
