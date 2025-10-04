@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"gwi/routes"
 	"log"
 	"net/http"
 )
