@@ -26,7 +26,6 @@ The main goals during development were:
 - Separation of concerns: each entity has a route, a service and a model.
 - Security:
     - JWT
-    - Sanitize input (validator)
     - Unified response
 - Error handling
 - Testing
@@ -64,21 +63,19 @@ TODO
 # Features
 - List Favorites:
 ```bash
-curl -X GET -H "Authorization: Bearer $JWT" "http://127.0.0.1:8080/favorites?user_id={user_id}"
+curl -X GET -H "Authorization: Bearer $JWT" "http://127.0.0.1:8080/favorites
 ```
 ```bash
-curl -X GET -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxfQ.fKCJWNXwhs7ukzI7vpAN2v1z5PBFmiqLlAEhoxbuDB4" "http://127.0.0.1:8080/favorites?user_id=1"
+curl -X GET -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxfQ.fKCJWNXwhs7ukzI7vpAN2v1z5PBFmiqLlAEhoxbuDB4" "http://127.0.0.1:8080/favorites"
 ```
 - Add a new Favorite
 ```bash
-curl -X POST -H "Authorization: Bearer $JWT" "http://127.0.0.1:8080/favorites?user_id={user_id}" -d '{
-    "user_id": {user_id},
+curl -X POST -H "Authorization: Bearer $JWT" "http://127.0.0.1:8080/favorites" -d '{
     "asset_id": {asset_id}
   }'
 ```
 ```bash
-curl -X POST -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxfQ.fKCJWNXwhs7ukzI7vpAN2v1z5PBFmiqLlAEhoxbuDB4" "http://127.0.0.1:8080/favorites?user_id=1" -d '{
-    "user_id": 1,
+curl -X POST -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxfQ.fKCJWNXwhs7ukzI7vpAN2v1z5PBFmiqLlAEhoxbuDB4" "http://127.0.0.1:8080/favorites" -d '{
     "asset_id": 2
   }'
 ```
@@ -130,6 +127,8 @@ secret_key="gwi-jwt-secret"
 - Use database: NoSQL (document-based) would be my suggestion due to the unstructured format of data (i.e. mongoDB or ElasticSearch)
 - Logging 
 - Pagination
+- Lazy loading
+- Concurrency
 - Authorization on authenticated users
 - Expiration in JWT
 - Blacklist old JWT tokens
@@ -137,8 +136,6 @@ secret_key="gwi-jwt-secret"
 - Enhance input validators
 
 # Bugs
-
-- Not checking for duplicate favorites
 
 # Licences
 
