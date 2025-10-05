@@ -12,5 +12,6 @@ import (
 func RegisterRoutes(router *mux.Router) {
 	router.Handle("/assets", middleware.JWTAuth(http.HandlerFunc(asset_service.GetAssets))).Methods("GET")
 	router.Handle("/assets", middleware.JWTAuth(http.HandlerFunc(asset_service.AddAsset))).Methods("POST")
-	router.Handle("/assets/{id}", middleware.JWTAuth(http.HandlerFunc(asset_service.DeleteAsset))).Methods("DELETE")
+	router.Handle("/assets/{id}", middleware.JWTAuth(http.HandlerFunc(asset_service.EditAsset))).Methods("PUT")
+	router.Handle("/assets/{id}", middleware.JWTAuth(http.HandlerFunc(asset_service.EditAsset))).Methods("PUT")
 }
