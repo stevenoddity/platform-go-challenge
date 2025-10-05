@@ -11,20 +11,17 @@ import (
 	"gwi/utils"
 )
 
-// GetFavorites handles the HTTP request to retrieve the favorite items of a user.
-// It expects a query parameter "user_id" to identify the user. If the user_id is missing
-// or invalid, it responds with a bad request error. If valid, it searches the database
-// for the user's favorites and returns them in the response.
+// GetFavorites retrieves the list of favorite assets for the authenticated user.
+// It extracts the user ID from the JWT token provided in the Authorization header,
+// fetches the user's favorites from the database, and populates the asset details
+// for each favorite. Finally, it sends the list of favorites back to the client
+// as a JSON response. If the user is not authenticated, it sends an error response.
 func GetFavorites(w http.ResponseWriter, r *http.Request) {
-	userIDStr := r.URL.Query().Get("user_id")
-	if userIDStr == "" {
-		utils.SendError(w, utils.ErrBadRequest("Missing user_id"))
-		return
-	}
-
-	userID, err := strconv.Atoi(userIDStr)
+	// fetch user_id from JWT
+	authorizationHeader := r.Header.Get("Authorization")
+	userID, err := utils.ExtractUserID(authorizationHeader)
 	if err != nil {
-		utils.SendError(w, utils.ErrBadRequest("Invalid user_id"))
+		utils.SendError(w, utils.ErrUnauthenticated("Invalid user"))
 		return
 	}
 
@@ -44,26 +41,23 @@ func GetFavorites(w http.ResponseWriter, r *http.Request) {
 	utils.SendSuccess(w, userFavorites)
 }
 
-// AddFavorite handles the HTTP request to add a new favorite item.
-// It decodes the JSON request body into a Favorite model, validates it,
-// assigns a new ID, and appends it to the FavoritesDB. If the JSON is
-// invalid or the favorite item fails validation, it sends an error response.
+// AddFavorite handles the HTTP request to add a favorite asset for a user.
+// It decodes the JSON request body to extract the asset ID, checks if the asset exists,
+// verifies the user's authentication, and ensures that the favorite does not already exist.
+// If all checks pass, it creates a new favorite entry and adds it to the database.
 func AddFavorite(w http.ResponseWriter, r *http.Request) {
-	var newFav favorite_model.Favorite
-	if err := json.NewDecoder(r.Body).Decode(&newFav); err != nil {
-		utils.SendError(w, utils.ErrBadRequest("Invalid JSON"))
-		return
+	var input struct {
+		AssetID int `json:"asset_id"`
 	}
-
-	if err := utils.ValidateFavorite(&newFav); err != nil {
-		utils.SendError(w, utils.ErrBadRequest(err.Error()))
+	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
+		utils.SendError(w, utils.ErrBadRequest("Invalid JSON"))
 		return
 	}
 
 	// Check if asset exists
 	var assetFound *asset_model.Asset
 	for _, a := range database.AssetsDB {
-		if a.ID == newFav.AssetID {
+		if a.ID == input.AssetID {
 			assetFound = &a
 			break
 		}
@@ -72,16 +66,37 @@ func AddFavorite(w http.ResponseWriter, r *http.Request) {
 		utils.SendError(w, utils.ErrNotFound("Asset not found"))
 		return
 	}
-	newFav.ID = len(database.FavoritesDB) + 1
-	database.FavoritesDB = append(database.FavoritesDB, newFav)
 
-	utils.SendSuccess(w, newFav)
+	authorizationHeader := r.Header.Get("Authorization")
+	userID, err := utils.ExtractUserID(authorizationHeader)
+	if err != nil {
+		utils.SendError(w, utils.ErrUnauthenticated("Invalid user"))
+		return
+	}
+	newFavorite := favorite_model.Favorite{
+		UserID:  userID,
+		AssetID: input.AssetID,
+		Asset:   assetFound,
+	}
+	// Check if favorite already exists
+	for _, f := range database.FavoritesDB {
+		if f.UserID == userID && f.AssetID == input.AssetID {
+			utils.SendError(w, utils.ErrBadRequest("Favorite already exists"))
+			return
+		}
+	}
+	newFavorite.ID = len(database.FavoritesDB) + 1
+	database.FavoritesDB = append(database.FavoritesDB, newFavorite)
+
+	utils.SendSuccess(w, newFavorite)
 }
 
 // DeleteFavorite handles the HTTP request to delete a favorite item.
-// It extracts the ID from the URL, converts it to an integer, and removes
-// the corresponding favorite from the database. If the ID is invalid or
-// the favorite is not found, it sends an appropriate error response.
+// It extracts the favorite ID from the URL, checks if the ID is valid,
+// verifies if the user is authorized to delete the favorite,
+// and removes the favorite from the database if found.
+// If the ID is invalid, the user is unauthorized, or the favorite is not found,
+// it sends an appropriate error response.
 func DeleteFavorite(w http.ResponseWriter, r *http.Request) {
 	idStr := r.URL.Path[len("/favorites/"):]
 	id, err := strconv.Atoi(idStr)
@@ -92,6 +107,11 @@ func DeleteFavorite(w http.ResponseWriter, r *http.Request) {
 
 	for i, f := range database.FavoritesDB {
 		if f.ID == id {
+			// Check if user is authorized to delete this favorite (owns it)
+			if !(utils.IsUserAuthorized(f.UserID, r.Header.Get("Authorization"))) {
+				utils.SendError(w, utils.ErrUnauthorized("User is not authorized for this action"))
+				return
+			}
 			database.FavoritesDB = append(database.FavoritesDB[:i], database.FavoritesDB[i+1:]...)
 			utils.SendSuccess(w, nil)
 			return

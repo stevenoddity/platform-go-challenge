@@ -26,7 +26,12 @@ func DeleteAsset(w http.ResponseWriter, r *http.Request) {
 	// This function currently does not implement any logic.
 }
 
-// EditAsset handles the HTTP request to edit an asset.
+// EditAsset handles the HTTP request to edit an existing asset.
+// It retrieves the asset ID from the URL parameters, decodes the
+// JSON body for update data, checks user authorization, and
+// merges the new data into the existing asset description.
+// If successful, it updates the asset and sends a success response;
+// otherwise, it sends an appropriate error response.
 func EditAsset(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	idStr := vars["id"]
@@ -48,6 +53,11 @@ func EditAsset(w http.ResponseWriter, r *http.Request) {
 	var asset *asset_model.Asset
 	for i := range database.AssetsDB {
 		if database.AssetsDB[i].ID == assetID {
+			// Check if user is authorized to edit this asset (owns it)
+			if !(utils.IsUserAuthorized(database.AssetsDB[i].UserID, r.Header.Get("Authorization"))) {
+				utils.SendError(w, utils.ErrUnauthorized("User is not authorized for this action"))
+				return
+			}
 			asset = &database.AssetsDB[i]
 			break
 		}
