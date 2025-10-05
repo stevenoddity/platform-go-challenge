@@ -61,43 +61,47 @@ TODO
 ```
 
 # Features
-- List Favorites:
+- ## List Favorites
 ```bash
-curl -X GET -H "Authorization: Bearer $JWT" "http://127.0.0.1:8080/favorites
+curl -i -X GET -H "Authorization: Bearer $JWT" "http://127.0.0.1:8080/favorites
 ```
+Example:
 ```bash
-curl -X GET -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxfQ.fKCJWNXwhs7ukzI7vpAN2v1z5PBFmiqLlAEhoxbuDB4" "http://127.0.0.1:8080/favorites"
+curl -i -X GET -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxfQ.fKCJWNXwhs7ukzI7vpAN2v1z5PBFmiqLlAEhoxbuDB4" "http://127.0.0.1:8080/favorites"
 ```
-- Add a new Favorite
+- ## Add a new Favorite
 ```bash
-curl -X POST -H "Authorization: Bearer $JWT" "http://127.0.0.1:8080/favorites" -d '{
+curl -i -X POST -H "Authorization: Bearer $JWT" "http://127.0.0.1:8080/favorites" -d '{
     "asset_id": {asset_id}
   }'
 ```
+Example:
 ```bash
-curl -X POST -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxfQ.fKCJWNXwhs7ukzI7vpAN2v1z5PBFmiqLlAEhoxbuDB4" "http://127.0.0.1:8080/favorites" -d '{
+curl -i -X POST -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxfQ.fKCJWNXwhs7ukzI7vpAN2v1z5PBFmiqLlAEhoxbuDB4" "http://127.0.0.1:8080/favorites" -d '{
     "asset_id": 2
   }'
 ```
-- Delete a Favorite
+- ## Delete a Favorite
 ```bash
-curl -X DELETE -H "Authorization: Bearer $JWT" "http://127.0.0.1:8080/favorites/{favorite_id}"
+curl -i -X DELETE -H "Authorization: Bearer $JWT" "http://127.0.0.1:8080/favorites/{favorite_id}"
 ```
+Example:
 ```bash
-curl -X DELETE -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxfQ.fKCJWNXwhs7ukzI7vpAN2v1z5PBFmiqLlAEhoxbuDB4" "http://127.0.0.1:8080/favorites/1"
+curl -i -X DELETE -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxfQ.fKCJWNXwhs7ukzI7vpAN2v1z5PBFmiqLlAEhoxbuDB4" "http://127.0.0.1:8080/favorites/1"
 ```
-- Edit Asset's description
+- ## Edit Asset's description
 ```bash
-curl -X PUT -H "Authorization: Bearer $JWT" "http://127.0.0.1:8080/assets/{asset_id}" -d '{
+curl -i -X PUT -H "Authorization: Bearer $JWT" "http://127.0.0.1:8080/assets/{asset_id}" -d '{
     "data": {
-      "category": "crypto",
-      "price": 64000
+      "new_data_field": "new_value",
+      "new_data_field_2": 64000
     },
     "new_field": "example"
   }'
 ```
+Example:
 ```bash
-curl -X PUT -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxfQ.fKCJWNXwhs7ukzI7vpAN2v1z5PBFmiqLlAEhoxbuDB4" "http://127.0.0.1:8080/assets/1" -d '{
+curl -i -X PUT -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxfQ.fKCJWNXwhs7ukzI7vpAN2v1z5PBFmiqLlAEhoxbuDB4" "http://127.0.0.1:8080/assets/1" -d '{
     "data": {
       "category": "crypto",
       "price": 64000
@@ -108,8 +112,10 @@ curl -X PUT -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c
 
 # Data population
 
-
-
+Initial dataset can be located at:
+```bash
+database/database.go
+```
 
 # Authentication
 ## JWT token for user_id = 1:
@@ -127,15 +133,18 @@ secret_key="gwi-jwt-secret"
 - Use database: NoSQL (document-based) would be my suggestion due to the unstructured format of data (i.e. mongoDB or ElasticSearch)
 - Logging 
 - Pagination
-- Lazy loading
+- Lazy loading (minimize json loadind)
 - Concurrency
 - Authorization on authenticated users
 - Expiration in JWT
 - Blacklist old JWT tokens
 - Rate limiter on endpoints
 - Enhance input validators
+- Use Maps instead of loops
 
 # Bugs
+
+- Concurency issues 
 
 # Licences
 
