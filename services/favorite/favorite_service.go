@@ -2,6 +2,7 @@ package favorite_service
 
 import (
 	"encoding/json"
+	asset_model "gwi/models/asset"
 	favorite_model "gwi/models/favorite"
 	"net/http"
 	"strconv"
@@ -28,9 +29,15 @@ func GetFavorites(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var userFavorites []favorite_model.Favorite
-	for _, f := range database.FavoritesDB {
-		if f.UserID == userID {
-			userFavorites = append(userFavorites, f)
+	for _, fav := range database.FavoritesDB {
+		if fav.UserID == userID {
+			for _, a := range database.AssetsDB {
+				if a.ID == fav.AssetID {
+					fav.Asset = &a
+					break
+				}
+			}
+			userFavorites = append(userFavorites, fav)
 		}
 	}
 
@@ -53,6 +60,18 @@ func AddFavorite(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Check if asset exists
+	var assetFound *asset_model.Asset
+	for _, a := range database.AssetsDB {
+		if a.ID == newFav.AssetID {
+			assetFound = &a
+			break
+		}
+	}
+	if assetFound == nil {
+		utils.SendError(w, utils.ErrNotFound("Asset not found"))
+		return
+	}
 	newFav.ID = len(database.FavoritesDB) + 1
 	database.FavoritesDB = append(database.FavoritesDB, newFav)
 
