@@ -8,6 +8,9 @@ import (
 	"github.com/golang-jwt/jwt/v4"
 )
 
+// JWTAuth is a middleware function that checks for a valid JWT in the Authorization header.
+// It expects the token to be prefixed with "Bearer ". If the token is missing or invalid,
+// it responds with an HTTP 401 Unauthorized status. If the token is valid, it calls the next handler.
 func JWTAuth(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		authHeader := r.Header.Get("Authorization")

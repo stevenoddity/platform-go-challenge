@@ -4,22 +4,22 @@ import (
 	"net/http"
 )
 
-// GET /users?user_id=1
+// GetUsers handles the HTTP request to retrieve a list of users.
 func GetUsers(w http.ResponseWriter, r *http.Request) {
-	// empty body
+	// This function currently does not implement any logic.
 }
 
-// POST /users
+// AddUser handles the HTTP request to add a new user.
 func AddUser(w http.ResponseWriter, r *http.Request) {
-	// empty body
+	// This function currently does not implement any logic.
 }
 
-// DELETE /users/{id}
+// DeleteUser handles the HTTP request to delete a user from the system.
 func DeleteUser(w http.ResponseWriter, r *http.Request) {
-	// empty body
+	// This function currently does not implement any logic.
 }
 
-// EDIT /users/{id}
+// EditUser handles the HTTP request to edit a user's information.
 func EditUser(w http.ResponseWriter, r *http.Request) {
-	// empty body
+	// This function currently does not implement any logic.
 }

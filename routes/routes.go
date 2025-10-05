@@ -8,8 +8,9 @@ import (
 	"github.com/gorilla/mux"
 )
 
+// RegisterRoutes initializes and returns a new router with all the application routes registered.
+// It sets up the main router and registers user, asset, and favorite routes.
 func RegisterRoutes() *mux.Router {
-	// create one main router
 	router := mux.NewRouter()
 
 	user_route.RegisterRoutes(router)

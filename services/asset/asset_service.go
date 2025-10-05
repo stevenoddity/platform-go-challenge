@@ -4,22 +4,22 @@ import (
 	"net/http"
 )
 
-// GET /assets?user_id=1
+// GetAssets handles the HTTP request to retrieve assets.
 func GetAssets(w http.ResponseWriter, r *http.Request) {
-	// empty body
+	// This function currently does not implement any logic.
 }
 
-// POST /assets
+// AddAsset handles the HTTP request to add a new asset.
 func AddAsset(w http.ResponseWriter, r *http.Request) {
-	// empty body
+	// This function currently does not implement any logic.
 }
 
-// DELETE /assets/{id}
+// DeleteAsset handles the HTTP request to delete an asset.
 func DeleteAsset(w http.ResponseWriter, r *http.Request) {
-	// empty body
+	// This function currently does not implement any logic.
 }
 
-// EDIT /assets/{id}
+// EditAsset handles the HTTP request to edit an asset.
 func EditAsset(w http.ResponseWriter, r *http.Request) {
-	// empty body
+	// This function currently does not implement any logic.
 }

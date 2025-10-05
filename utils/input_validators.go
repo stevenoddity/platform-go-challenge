@@ -8,6 +8,8 @@ import (
 
 var validate = validator.New()
 
+// ValidateFavorite validates the given Favorite struct.
+// It returns an error if the validation fails, otherwise it returns nil.
 func ValidateFavorite(fav *favorite_model.Favorite) error {
 	return validate.Struct(fav)
 }

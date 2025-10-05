@@ -13,7 +13,6 @@ func (e *APIError) Error() string {
 	return fmt.Sprintf("%d: %s", e.Status, e.Message)
 }
 
-// Predefined common errors
 var (
 	ErrBadRequest      = func(msg string) *APIError { return &APIError{Status: 400, Message: msg} }
 	ErrNotFound        = func(msg string) *APIError { return &APIError{Status: 404, Message: msg} }
