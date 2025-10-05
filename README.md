@@ -134,7 +134,7 @@ secret_key="gwi-jwt-secret"
 - Logging 
 - Pagination
 - Lazy loading (minimize json loadind)
-- Concurrency
+- Concurrency (use locks)
 - Authorization on authenticated users
 - Expiration in JWT
 - Blacklist old JWT tokens
