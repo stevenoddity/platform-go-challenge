@@ -145,6 +145,7 @@ secret_key="gwi-jwt-secret"
 # Bugs
 
 - Concurency issues 
+- HTTP Response Status of creation should be 201
 
 # Licences
 

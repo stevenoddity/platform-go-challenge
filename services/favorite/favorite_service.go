@@ -104,6 +104,12 @@ func DeleteFavorite(w http.ResponseWriter, r *http.Request) {
 		utils.SendError(w, utils.ErrBadRequest("Invalid ID"))
 		return
 	}
+	authorizationHeader := r.Header.Get("Authorization")
+	_, err = utils.ExtractUserID(authorizationHeader)
+	if err != nil {
+		utils.SendError(w, utils.ErrUnauthenticated("Invalid user"))
+		return
+	}
 
 	for i, f := range database.FavoritesDB {
 		if f.ID == id {

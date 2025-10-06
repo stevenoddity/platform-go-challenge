@@ -51,7 +51,7 @@ func TestAddFavorite_InvalidToken(t *testing.T) {
 
 	// Assert
 	if w.Code != http.StatusForbidden {
-		t.Errorf("expected 401, got %d", w.Code)
+		t.Errorf("expected 403, got %d", w.Code)
 	}
 }
 
@@ -65,6 +65,86 @@ func TestAddFavorite_AssetNotFound(t *testing.T) {
 	w := httptest.NewRecorder()
 
 	favorite_service.AddFavorite(w, req)
+
+	// Assert
+	if w.Code != http.StatusNotFound {
+		t.Errorf("expected 404, got %d", w.Code)
+	}
+}
+
+func TestGetFavorites_ValidRequest(t *testing.T) {
+	userID := 1
+	authorizationHeader := "Bearer " + GenerateJwtToken(userID)
+
+	req := httptest.NewRequest(http.MethodGet, "/"+constants.ENDPOINT_FAVORITES, nil)
+	req.Header.Set("Authorization", authorizationHeader)
+	w := httptest.NewRecorder()
+
+	favorite_service.GetFavorites(w, req)
+	resp := w.Result()
+	defer resp.Body.Close()
+
+	// Assert
+	if resp.StatusCode != http.StatusOK {
+		t.Fatalf("expected 200 Created, got %d", resp.StatusCode)
+	}
+
+}
+
+func TestGetFavorites_InvalidToken(t *testing.T) {
+	req := httptest.NewRequest(http.MethodGet, "/"+constants.ENDPOINT_FAVORITES, nil)
+	req.Header.Set("Authorization", "Bearer invalid-token")
+	w := httptest.NewRecorder()
+
+	favorite_service.GetFavorites(w, req)
+
+	// Assert
+	if w.Code != http.StatusForbidden {
+		t.Errorf("expected 403, got %d", w.Code)
+	}
+}
+
+func TestDeleteFavorite_ValidRequest(t *testing.T) {
+	userID := 1
+	authorizationHeader := "Bearer " + GenerateJwtToken(userID)
+
+	req := httptest.NewRequest(http.MethodDelete, "/"+constants.ENDPOINT_FAVORITES+"/2", nil)
+	req.Header.Set("Authorization", authorizationHeader)
+	w := httptest.NewRecorder()
+
+	favorite_service.DeleteFavorite(w, req)
+	resp := w.Result()
+	defer resp.Body.Close()
+
+	// Assert
+	if resp.StatusCode != http.StatusOK {
+		t.Fatalf("expected 200 Created, got %d", resp.StatusCode)
+	}
+
+}
+
+func TestDeleteFavorite_InvalidToken(t *testing.T) {
+	req := httptest.NewRequest(http.MethodDelete, "/"+constants.ENDPOINT_FAVORITES+"/214", nil)
+	req.Header.Set("Authorization", "Bearer invalid-token")
+	w := httptest.NewRecorder()
+
+	favorite_service.DeleteFavorite(w, req)
+
+	// Assert
+	if w.Code != http.StatusForbidden {
+		t.Errorf("expected 403, got %d", w.Code)
+	}
+}
+
+func TestDeleteFavorite_AssetNotFound(t *testing.T) {
+	userID := 1
+	authorizationHeader := "Bearer " + GenerateJwtToken(userID)
+
+	req := httptest.NewRequest(http.MethodDelete, "/"+constants.ENDPOINT_FAVORITES+"/999", nil)
+	req.Header.Set("Authorization", authorizationHeader)
+	w := httptest.NewRecorder()
+
+	favorite_service.DeleteFavorite(w, req)
 
 	// Assert
 	if w.Code != http.StatusNotFound {
