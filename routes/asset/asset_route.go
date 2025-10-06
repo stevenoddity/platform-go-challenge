@@ -14,5 +14,4 @@ func RegisterRoutes(router *mux.Router) {
 	router.Handle("/"+constants.ENDPOINT_ASSETS, middleware.JWTAuth(http.HandlerFunc(asset_service.GetAssets))).Methods("GET")
 	router.Handle("/"+constants.ENDPOINT_ASSETS, middleware.JWTAuth(http.HandlerFunc(asset_service.AddAsset))).Methods("POST")
 	router.Handle("/"+constants.ENDPOINT_ASSETS+"/{id}", middleware.JWTAuth(http.HandlerFunc(asset_service.EditAsset))).Methods("PUT")
-	router.Handle("/"+constants.ENDPOINT_ASSETS+"/{id}", middleware.JWTAuth(http.HandlerFunc(asset_service.EditAsset))).Methods("PUT")
 }
