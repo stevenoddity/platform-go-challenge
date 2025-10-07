@@ -42,6 +42,13 @@ func EditAsset(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	authorizationHeader := r.Header.Get("Authorization")
+	_, err = utils.ExtractUserID(authorizationHeader)
+	if err != nil {
+		utils.SendError(w, utils.ErrUnauthenticated("Invalid user"))
+		return
+	}
+
 	// Decode request body into a generic map
 	var updateData map[string]interface{}
 	if err := json.NewDecoder(r.Body).Decode(&updateData); err != nil {
