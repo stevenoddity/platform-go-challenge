@@ -57,7 +57,7 @@ Application can be accessed at http://127.0.0.1:8080/
 ```
 Command for running tests:
 ```bash
-TODO
+utils.ExtractUserID
 ```
 
 # Features
