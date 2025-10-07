@@ -48,7 +48,7 @@ cd platform-go-challenge
 docker build -t gwi-challenge .
 
 # Run docker image 
-docker run -p 5000:5000 gwi-challenge
+docker run -p 8080:8080 gwi-challenge
 
 ```
 
@@ -57,7 +57,7 @@ Application can be accessed at http://127.0.0.1:8080/
 ```
 Command for running tests:
 ```bash
-utils.ExtractUserID
+go test -v ./...
 ```
 
 # Features
@@ -78,7 +78,7 @@ curl -i -X POST -H "Authorization: Bearer $JWT" "http://127.0.0.1:8080/favorites
 Example:
 ```bash
 curl -i -X POST -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxfQ.fKCJWNXwhs7ukzI7vpAN2v1z5PBFmiqLlAEhoxbuDB4" "http://127.0.0.1:8080/favorites" -d '{
-    "asset_id": 2
+    "asset_id": 3
   }'
 ```
 - ## Delete a Favorite
